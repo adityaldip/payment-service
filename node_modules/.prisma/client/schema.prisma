@@ -1,0 +1,58 @@
+// schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id               Int               @id @default(autoincrement())
+  username         String            @unique
+  password         String
+  balance          Float             @default(0) 
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  transactions     Transaction[]     
+  paymentAccounts  PaymentAccount[]
+  @@map(name: "users")
+}
+
+
+model PaymentAccount {
+  id               Int               @id @default(autoincrement())
+  type             String
+  userId           Int
+  user             User              @relation(fields: [userId], references: [id])
+  paymentHistories PaymentHistory[]
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+}
+
+model PaymentHistory {
+  id               Int               @id @default(autoincrement())
+  amount           Float
+  timestamp        DateTime          @default(now())
+  toAddress        String
+  status           String
+  currency         String            
+  accountId        Int
+  account          PaymentAccount    @relation(fields: [accountId], references: [id])
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+}
+
+model Transaction {
+  id            Int      @id @default(autoincrement())
+  amount        Float
+  toAddress     String
+  status        String
+  currency      String            
+  userId        Int
+  user          User              @relation(fields: [userId], references: [id])
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
