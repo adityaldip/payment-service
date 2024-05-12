@@ -1,8 +1,7 @@
 // models/User.js
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
-const bcrypt = require('bcrypt');
-
+const bcrypt = require('bcryptjs');
 module.exports = {
   async createUser(username, password) {
     const hashedPassword = await bcrypt.hash(password, 10);
